@@ -37,13 +37,15 @@ namespace NetCoreBBS
             services.AddDbContext<DataContext>(options => options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
             services.AddIdentity<User, IdentityRole>(options =>
             {
-                options.Password = new PasswordOptions() {
+                options.Password = new PasswordOptions()
+                {
                     RequireNonAlphanumeric = false,
-                    RequireUppercase=false
+                    RequireUppercase = false
                 };
             }).AddEntityFrameworkStores<DataContext>().AddDefaultTokenProviders();
             // Add framework services.
-            services.AddMvc(option=> {
+            services.AddMvc(option =>
+            {
                 option.EnableEndpointRouting = false;
             });
             services.AddScoped<IRepository<TopicNode>, Repository<TopicNode>>();
@@ -66,6 +68,7 @@ namespace NetCoreBBS
             {
                 options.TextEncoderSettings = new TextEncoderSettings(UnicodeRanges.All);
             });
+            services.AddControllersWithViews().AddRazorRuntimeCompilation();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -71,7 +71,7 @@ namespace NetCoreBBS.Controllers
 
         public IActionResult About()
         {
-            ViewData["Message"] = ".NET Core 版轻论坛";
+            ViewData["Message"] = "Ives Blog";
             return View();
         }
 
