@@ -1,4 +1,5 @@
 ﻿@using NetCoreBBS.ViewComponents
+<link href="~/css/clock.css" rel="stylesheet" />
 <div class="panel panel-default" style="margin-top:20px;">
     <div class="panel-heading">
         <h3 class="panel-title">Ives Blog</h3>
@@ -8,5 +9,40 @@
         服务器时间：@DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
     </div>
 </div>
+<div class="panel panel-default" style="margin-top:20px;">
+    <div class="panel-heading">
+        <h3 class="panel-title">时间</h3>
+    </div>
+    <div class="panel  clock">
+        <div class="flip">
+            <div class="digital front" data-number="0"></div>
+            <div class="digital back" data-number="1"></div>
+        </div>
+        <div class="flip">
+            <div class="digital front" data-number="0"></div>
+            <div class="digital back" data-number="1"></div>
+        </div>
+        <em class="divider">:</em>
+        <div class="flip">
+            <div class="digital front" data-number="0"></div>
+            <div class="digital back" data-number="1"></div>
+        </div>
+        <div class="flip">
+            <div class="digital front" data-number="0"></div>
+            <div class="digital back" data-number="1"></div>
+        </div>
+        <em class="divider">:</em>
+        <div class="flip">
+            <div class="digital front" data-number="0"></div>
+            <div class="digital back" data-number="1"></div>
+        </div>
+        <div class="flip">
+            <div class="digital front" data-number="0"></div>
+            <div class="digital back" data-number="1"></div>
+        </div>
+    </div>
+</div>
+
 @(await Component.InvokeAsync<TopicRankList>(new { days = 30 }))
 @(await Component.InvokeAsync<Statistics>())
+<script type="text/javascript" src="~/js/clock.js"></script>
