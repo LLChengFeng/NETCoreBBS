@@ -19,6 +19,7 @@ using System.Text.Encodings.Web;
 using NetCoreBBS.Entities;
 using NetCoreBBS.Infrastructure.Repositorys;
 using NetCoreBBS.Interfaces;
+using Microsoft.Extensions.Hosting;
 
 namespace NetCoreBBS
 {
@@ -74,6 +75,18 @@ namespace NetCoreBBS
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                app.UseExceptionHandler("/Error");
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseHsts();
+            }
+
+            app.UseHttpsRedirection();
             app.UseRequestIPMiddleware();
 
             InitializeNetCoreBBSDatabase(app.ApplicationServices);
@@ -101,22 +114,19 @@ namespace NetCoreBBS
             {
                 var db = serviceScope.ServiceProvider.GetService<DataContext>();
                 db.Database.Migrate();
-                if (db.TopicNodes.Count() == 0)
+                if (db.TopicNodes?.Count() == 0)
                 {
-                    db.TopicNodes.AddRange(GetTopicNodes());
+                    db.TopicNodes.AddRange(TopicNodes);
                     db.SaveChanges();
                 }
             }
         }
 
-        IEnumerable<TopicNode> GetTopicNodes()
-        {
-            return new List<TopicNode>()
+        private static  IEnumerable<TopicNode> TopicNodes => new List<TopicNode>()
             {
                 new TopicNode() { Name=".NET Core", NodeName="", ParentId=0, Order=1, CreateOn=DateTime.Now, },
                 new TopicNode() { Name=".NET Core", NodeName="netcore", ParentId=1, Order=1, CreateOn=DateTime.Now, },
                 new TopicNode() { Name="ASP.NET Core", NodeName="aspnetcore", ParentId=1, Order=1, CreateOn=DateTime.Now, }
             };
-        }
     }
 }
