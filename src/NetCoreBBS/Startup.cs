@@ -20,14 +20,17 @@ using NetCoreBBS.Entities;
 using NetCoreBBS.Infrastructure.Repositorys;
 using NetCoreBBS.Interfaces;
 using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Http;
 
 namespace NetCoreBBS
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        private readonly IWebHostEnvironment _env;
+        public Startup(IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
         {
             Configuration = configuration;
+            _env = webHostEnvironment;
         }
 
         public IConfiguration Configuration { get; }
@@ -70,26 +73,35 @@ namespace NetCoreBBS
                 options.TextEncoderSettings = new TextEncoderSettings(UnicodeRanges.All);
             });
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
+            // IWebHostEnvironment (stored in _env) is injected into the Startup class.
+            if (!_env.IsDevelopment())
+            {
+                services.AddHttpsRedirection(options =>
+                {
+                    options.RedirectStatusCode = StatusCodes.Status308PermanentRedirect;
+                    options.HttpsPort = 5000;
+                });
+            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-            }
+            //if (env.IsDevelopment())
+            //{
+            //    app.UseDeveloperExceptionPage();
+            //}
+            //else
+            //{
+            //    app.UseExceptionHandler("/Error");
+            //    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+            //    app.UseHsts();
+            //}
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseRequestIPMiddleware();
 
-            InitializeNetCoreBBSDatabase(app.ApplicationServices);
+            InitializeNetCoreBBSDatabase(app?.ApplicationServices);
             app.UseDeveloperExceptionPage();
 
             app.UseStaticFiles();
@@ -108,7 +120,7 @@ namespace NetCoreBBS
             });
         }
 
-        private void InitializeNetCoreBBSDatabase(IServiceProvider serviceProvider)
+        private static void InitializeNetCoreBBSDatabase(IServiceProvider serviceProvider)
         {
             using (var serviceScope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
