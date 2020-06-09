@@ -21,6 +21,9 @@ using NetCoreBBS.Infrastructure.Repositorys;
 using NetCoreBBS.Interfaces;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.ResponseCompression;
+using NetCoreBlog.Middleware;
+using System.IO.Compression;
 
 namespace NetCoreBBS
 {
@@ -38,6 +41,19 @@ namespace NetCoreBBS
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<GzipCompressionProviderOptions>(options =>
+            {
+                options.Level = CompressionLevel.Fastest;
+            });
+            services.AddResponseCompression(options =>
+            {
+                options.Providers.Add<BrotliCompressionProvider>();
+                options.Providers.Add<GzipCompressionProvider>();
+                options.Providers.Add<CustomCompressionProvider>();
+                options.MimeTypes =
+                    ResponseCompressionDefaults.MimeTypes.Concat(
+                        new[] { "image/svg+xml" });
+            });
             services.AddDbContext<DataContext>(options => options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
             services.AddIdentity<User, IdentityRole>(options =>
             {
@@ -85,7 +101,7 @@ namespace NetCoreBBS
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
+        public static void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
             //if (env.IsDevelopment())
             //{
@@ -99,6 +115,7 @@ namespace NetCoreBBS
             //}
 
             //app.UseHttpsRedirection();
+            app.UseResponseCompression();
             app.UseRequestIPMiddleware();
 
             InitializeNetCoreBBSDatabase(app?.ApplicationServices);
