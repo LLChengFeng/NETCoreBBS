@@ -73,7 +73,7 @@ namespace NetCoreBBS.Controllers
                 user.Url = usermodel.Url;
                 user.GitHub = usermodel.GitHub;
                 user.Profile = usermodel.Profile;
-                await UserManager.UpdateAsync(user);
+                await UserManager.UpdateAsync(user).ConfigureAwait(true);
                 return RedirectToAction("Index");
             }
             return View(user);

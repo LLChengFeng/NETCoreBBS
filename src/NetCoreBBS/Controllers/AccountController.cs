@@ -49,15 +49,15 @@ namespace NetCoreBBS.Controllers
                 return View(model);
             }
 
-            var result = await SignInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, lockoutOnFailure: false);
+            var result = await SignInManager.PasswordSignInAsync(model?.UserName, model.Password, model.RememberMe, lockoutOnFailure: false).ConfigureAwait(true);
             if (result.Succeeded)
             {
-                _logger.LogInformation("Logged in {userName}.", model.UserName);
+                _logger.LogInformation($"Logged in {model.UserName}.");
                 return RedirectToLocal(returnUrl);
             }
             else
             {
-                _logger.LogWarning("Failed to log in {userName}.", model.UserName);
+                _logger.LogWarning($"Failed to log in {model.UserName}.");
                 ModelState.AddModelError("", "用户名或密码错误");
                 return View(model);
             }
@@ -78,18 +78,18 @@ namespace NetCoreBBS.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new User { UserName = model.UserName, Email = model.Email,CreateOn=DateTime.Now,LastTime=DateTime.Now };
-                var result = await UserManager.CreateAsync(user, model.Password);
+                var user = new User { UserName = model?.UserName, Email = model.Email,CreateOn=DateTime.Now,LastTime=DateTime.Now };
+                var result = await UserManager.CreateAsync(user, model.Password).ConfigureAwait(true);
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("User {userName} was created.", model.Email);
-                    string code = await UserManager.GenerateEmailConfirmationTokenAsync(user);
+                    _logger.LogInformation($"User {model.Email} was created.");
+                    string code = await UserManager.GenerateEmailConfirmationTokenAsync(user).ConfigureAwait(true);
                     var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
                     await MessageServices.SendEmailAsync(model.Email, "Confirm your account",
-                        "Please confirm your account by clicking this link: <a href=\"" + callbackUrl + "\">link</a>");
+                        "Please confirm your account by clicking this link: <a href=\"" + callbackUrl + "\">link</a>").ConfigureAwait(true);
                     if (string.Equals(user.UserName, "admin", StringComparison.OrdinalIgnoreCase))
                     {
-                        await UserManager.AddClaimAsync(user, new Claim("Admin", "Allowed"));
+                        await UserManager.AddClaimAsync(user, new Claim("Admin", "Allowed")).ConfigureAwait(true);
                     }
                     return RedirectToAction("Login");
                 }
@@ -114,9 +114,9 @@ namespace NetCoreBBS.Controllers
         {
             var userName = HttpContext.User.Identity.Name;
 
-            await SignInManager.SignOutAsync();
+            await SignInManager.SignOutAsync().ConfigureAwait(true);
 
-            _logger.LogInformation("{userName} logged out.", userName);
+            _logger.LogInformation($"{userName} logged out.");
             return RedirectToAction("Index", "Home");
         }
 
@@ -132,7 +132,7 @@ namespace NetCoreBBS.Controllers
             foreach (var error in result.Errors)
             {
                 ModelState.AddModelError("", error.Description);
-                _logger.LogWarning("Error in creating user: {error}", error.Description);
+                _logger.LogWarning($"Error in creating user: {error.Description}");
             }
         }
 
