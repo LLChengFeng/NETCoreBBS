@@ -24,6 +24,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.ResponseCompression;
 using NetCoreBlog.Middleware;
 using System.IO.Compression;
+using DotNetCore.CAP;
 
 namespace NetCoreBBS
 {
@@ -55,6 +56,24 @@ namespace NetCoreBBS
                         new[] { "image/svg+xml" });
             });
             services.AddDbContext<DataContext>(options => options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
+            //CAP
+            services.AddCap(x =>
+            {
+                x.UseEntityFramework<DataContext>();
+                x.UseSqlite(options => options.ConnectionString = Configuration.GetConnectionString("DefaultConnection"));
+                x.UseRabbitMQ(options=> {
+                    options.UserName = "admin";
+                    options.HostName = "localhost";
+                    options.Password = "Ives@1234";
+                    options.Port = 15672;
+                });
+
+                //失败后的重试次数，默认50次；在FailedRetryInterval默认60秒的情况下，即默认重试50*60秒(50分钟)之后放弃失败重试
+                x.FailedRetryCount = 10;
+
+                //失败后的重拾间隔，默认60秒
+                x.FailedRetryInterval = 60;
+            });
             services.AddIdentity<User, IdentityRole>(options =>
             {
                 options.Password = new PasswordOptions()
