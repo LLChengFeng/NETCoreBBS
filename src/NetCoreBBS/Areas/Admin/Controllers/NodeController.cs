@@ -52,10 +52,7 @@ namespace NetCoreBBS.Areas.Admin.Controllers
         }
 
         // GET: Node/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
+        public ActionResult Edit(int id) => View();
 
         // POST: Node/Edit/5
         [HttpPost]

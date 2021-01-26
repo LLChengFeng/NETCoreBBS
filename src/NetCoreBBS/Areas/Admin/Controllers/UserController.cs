@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using NetCoreBBS.Infrastructure;
+using System.Globalization;
 
 namespace NetCoreBBS.Areas.Admin.Controllers
 {
@@ -25,7 +26,7 @@ namespace NetCoreBBS.Areas.Admin.Controllers
             var pagesize = 20;
             var pageindex = 1;
             if (!string.IsNullOrEmpty(Request.Query["page"]))
-                pageindex = Convert.ToInt32(Request.Query["page"]);
+                pageindex = Convert.ToInt32(Request.Query["page"], CultureInfo.CurrentCulture);
             var users = _context.Users.AsQueryable();
             var count = users.Count();
             var userlist = users

@@ -32,9 +32,9 @@ namespace NetCoreBBS.Controllers
 
         //
         // GET: /Account/Login
-        public IActionResult Login(string returnUrl = null)
+        public IActionResult Login(string? returnurl = null)
         {
-            ViewBag.ReturnUrl = returnUrl;
+            ViewBag.ReturnUrl = returnurl;
             return View();
         }
 
@@ -42,18 +42,18 @@ namespace NetCoreBBS.Controllers
         // POST: /Account/Login
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
+        public async Task<IActionResult> Login(LoginViewModel model, string? returnurl = null)
         {
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
 
-            var result = await SignInManager.PasswordSignInAsync(model?.UserName, model.Password, model.RememberMe, lockoutOnFailure: false).ConfigureAwait(true);
+            var result = await SignInManager.PasswordSignInAsync(model?.UserName, model!.Password, model.RememberMe, lockoutOnFailure: false).ConfigureAwait(true);
             if (result.Succeeded)
             {
                 _logger.LogInformation($"Logged in {model.UserName}.");
-                return RedirectToLocal(returnUrl);
+                return RedirectToLocal(returnurl!);
             }
             else
             {
@@ -78,7 +78,7 @@ namespace NetCoreBBS.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new User { UserName = model?.UserName, Email = model.Email,CreateOn=DateTime.Now,LastTime=DateTime.Now };
+                var user = new User { UserName = model?.UserName, Email = model!.Email,CreateOn=DateTime.Now,LastTime=DateTime.Now };
                 var result = await UserManager.CreateAsync(user, model.Password).ConfigureAwait(true);
                 if (result.Succeeded)
                 {
@@ -112,7 +112,7 @@ namespace NetCoreBBS.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> LogOff()
         {
-            var userName = HttpContext.User.Identity.Name;
+            var userName = HttpContext.User.Identity!.Name;
 
             await SignInManager.SignOutAsync().ConfigureAwait(true);
 
@@ -141,17 +141,18 @@ namespace NetCoreBBS.Controllers
             return UserManager.GetUserAsync(HttpContext.User);
         }
 
-        private ActionResult RedirectToLocal(string returnUrl)
+        private ActionResult RedirectToLocal(string returnurl)
         {
-            if (Url.IsLocalUrl(returnUrl))
+            if (Url.IsLocalUrl(returnurl))
             {
-                return Redirect(returnUrl);
+                return Redirect(returnurl);
             }
             else
             {
                 return RedirectToAction("Index", "Home");
             }
         }
+
 
         #endregion
     }

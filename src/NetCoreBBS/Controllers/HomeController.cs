@@ -8,6 +8,7 @@ using NetCoreBBS.ViewModels;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using NetCoreBBS.Entities;
 using NetCoreBBS.Interfaces;
+using System.Globalization;
 
 namespace NetCoreBBS.Controllers
 {
@@ -26,9 +27,9 @@ namespace NetCoreBBS.Controllers
         {
             var pagesize = 20;
             var pageindex = 1;
-            Page<Topic> result = null ;
+            Page<Topic> result = null! ;
             if (!string.IsNullOrEmpty(Request.Query["page"]))
-                pageindex = Convert.ToInt32(Request.Query["page"]);
+                pageindex = Convert.ToInt32(Request.Query["page"], CultureInfo.CurrentCulture);
             if (!string.IsNullOrEmpty(Request.Query["s"]))
                 result = _topic.PageList(r => r.Title.Contains(Request.Query["s"]), pagesize, pageindex);
             else
@@ -49,10 +50,10 @@ namespace NetCoreBBS.Controllers
             }).ToList();
             ViewBag.PageIndex = pageindex;
             ViewBag.PageCount = result.GetPageCount();
-            ViewBag.User = userServices.User.Result;
+            ViewBag.User = userServices?.User.Result;
             var nodes = _node.List().ToList();
             ViewBag.Nodes = nodes;
-            ViewBag.NodeListItem = nodes.Where(r => r.ParentId != 0).Select(r => new SelectListItem { Value = r.Id.ToString(), Text = r.Name });
+            ViewBag.NodeListItem = nodes.Where(r => r.ParentId != 0).Select(r => new SelectListItem { Value = r.Id.ToString(CultureInfo.CurrentCulture), Text = r.Name });
             return View();
         }
 
@@ -60,7 +61,7 @@ namespace NetCoreBBS.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Index(Topic topic)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid && topic != null)
             {
                 topic.CreateOn = DateTime.Now;
                 topic.Type = TopicType.Normal;

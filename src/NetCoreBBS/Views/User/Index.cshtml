@@ -57,7 +57,7 @@
                     <div class="tab-pane active recent-topics" id="topics">
                         <div class="panel panel-default">
                             <ul class="list-group">
-                                @foreach (var item in topics)
+                                @foreach (var item in topics!)
                                 {
                                 <li class="list-group-item">
                                     <div class="title">
@@ -75,7 +75,7 @@
                     <div class="tab-pane recent-replies" id="replies">
                         <div class="panel panel-default">
                             <ul class="list-group">
-                                @foreach (var item in replys)
+                                @foreach (var item in replys!)
                                 {
                                     <li class="list-group-item">
                                         <div class="title">

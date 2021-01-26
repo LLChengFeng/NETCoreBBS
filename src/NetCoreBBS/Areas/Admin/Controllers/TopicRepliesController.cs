@@ -25,7 +25,7 @@ namespace NetCoreBBS.Areas.Admin.Controllers
         public async Task<IActionResult> Index(int id)
         {
             var topicreplys = _context.TopicReplys.Where(r => r.TopicId == id).ToListAsync();
-            return View(await topicreplys);
+            return View(await topicreplys.ConfigureAwait(true));
         }
         // GET: TopicReplies/Delete/5
         public async Task<IActionResult> Delete(int? id)
@@ -35,16 +35,16 @@ namespace NetCoreBBS.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var topicReply = await _context.TopicReplys.SingleOrDefaultAsync(m => m.Id == id);
+            var topicReply = await _context.TopicReplys.SingleOrDefaultAsync(m => m.Id == id).ConfigureAwait(true);
             if (topicReply == null)
             {
                 return NotFound();
             }
-            var topic = await _context.Topics.SingleOrDefaultAsync(r => r.Id == topicReply.TopicId);
+            var topic = await _context.Topics.SingleOrDefaultAsync(r => r.Id == topicReply.TopicId).ConfigureAwait(true);
             topic.ReplyCount -= 1;
             _context.Topics.Update(topic);
             _context.TopicReplys.Remove(topicReply);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync().ConfigureAwait(true);
             return NoContent();
         }
     }

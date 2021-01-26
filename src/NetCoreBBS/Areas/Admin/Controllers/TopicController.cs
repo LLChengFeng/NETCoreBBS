@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using NetCoreBBS.Infrastructure;
 using NetCoreBBS.Entities;
+using System.Globalization;
 
 // For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -25,7 +26,7 @@ namespace NetCoreBBS.Areas.Admin.Controllers
             var pagesize = 20;
             var pageindex = 1;
             if (!string.IsNullOrEmpty(Request.Query["page"]))
-                pageindex = Convert.ToInt32(Request.Query["page"]);
+                pageindex = Convert.ToInt32(Request.Query["page"], CultureInfo.CurrentCulture);
             var topics = _context.Topics.AsQueryable();
             var count = topics.Count();
             var topiclist = topics

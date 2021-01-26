@@ -7,6 +7,7 @@ using NetCoreBBS.Infrastructure;
 using NetCoreBBS.Entities;
 using NetCoreBBS.Interfaces;
 using NetCoreBBS.ViewModels;
+using System.Globalization;
 
 // For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -41,7 +42,7 @@ namespace NetCoreBBS.Controllers
         [Route("/Topic/{id}")]
         public IActionResult Index([Bind("TopicId,ReplyUserId,ReplyEmail,ReplyContent")]TopicReply reply)
         {
-            if (ModelState.IsValid&&!string.IsNullOrEmpty(reply.ReplyContent))
+            if (ModelState.IsValid&&!string.IsNullOrEmpty(reply?.ReplyContent))
             {
                 reply.CreateOn = DateTime.Now;
                 _reply.Add(reply);
@@ -51,7 +52,7 @@ namespace NetCoreBBS.Controllers
                 topic.ReplyCount += 1;
                 _topic.Edit(topic);
             }
-            return RedirectToAction("Index", "Topic", new { Id = reply.TopicId });
+            return RedirectToAction("Index", "Topic", new { Id = reply?.TopicId });
         }
 
         [Route("/Topic/Node/{name}")]
@@ -60,13 +61,13 @@ namespace NetCoreBBS.Controllers
             if (string.IsNullOrEmpty(name)) return Redirect("/");
             var node = _node.List(r => r.NodeName == name).FirstOrDefault();
             if (node == null)
-                node= _node.GetById(Convert.ToInt32(name));
+                node= _node.GetById(Convert.ToInt32(name, CultureInfo.CurrentCulture));
             if (node == null) return Redirect("/");
             var pagesize = 20;
             var pageindex = 1;
             Page<Topic> result;
             if (!string.IsNullOrEmpty(Request.Query["page"]))
-                pageindex = Convert.ToInt32(Request.Query["page"]);
+                pageindex = Convert.ToInt32(Request.Query["page"], CultureInfo.CurrentCulture);
             if (!string.IsNullOrEmpty(Request.Query["s"]))
                 result = _topic.PageList(r => r.NodeId == node.Id && r.Title.Contains(Request.Query["s"]),pagesize,pageindex);
             else

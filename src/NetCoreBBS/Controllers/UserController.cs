@@ -49,7 +49,7 @@ namespace NetCoreBBS.Controllers
             var user = UserManager.GetUserAsync(User).Result;
             if (ModelState.IsValid)
             {
-                if (usermodel.Avatar != null)
+                if (usermodel?.Avatar != null)
                 {
                     var avatar = usermodel.Avatar;
                     if (avatar.Length / 1024 > 100)
@@ -69,7 +69,7 @@ namespace NetCoreBBS.Controllers
                     }
                     user.Avatar = $"/images/avatar/{avatarfile}";
                 }
-                user.Email = usermodel.Email;
+                user.Email = usermodel?.Email;
                 user.Url = usermodel.Url;
                 user.GitHub = usermodel.GitHub;
                 user.Profile = usermodel.Profile;

@@ -59,7 +59,7 @@
                     <div class="form-group">
                         <label for="inputTitle" class="col-sm-2 control-label">节点</label>
                         <div class="col-sm-10">
-                            <select asp-for="NodeId" asp-items="ViewBag.NodeListItem" class="form-control">
+                            <select asp-for="NodeId" asp-items="ViewBag?.NodeListItem" class="form-control">
                                 <option value="0">请选择一个节点</option>
                             </select>
                         </div>
@@ -94,7 +94,7 @@
             <div class="panel-heading">讨论节点分类导航</div>
             <div class="panel-body">
                 <div class="row node-list">
-                    @foreach (var item in nodes.Where(r => r.ParentId == 0).OrderBy(r => r.Order))
+                    @foreach (var item in nodes!.Where(r => r.ParentId == 0).OrderBy(r => r.Order))
                     {
                         <div class="node media">
                             <label class="media-left">@item.Name</label>
