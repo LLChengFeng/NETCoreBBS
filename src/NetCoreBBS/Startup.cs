@@ -137,7 +137,7 @@ namespace NetCoreBBS
             app.UseResponseCompression();
             app.UseRequestIPMiddleware();
 
-            InitializeNetCoreBBSDatabase(app?.ApplicationServices);
+            InitializeNetCoreBBSDatabase(app?.ApplicationServices!);
             app.UseDeveloperExceptionPage();
 
             app.UseStaticFiles();
@@ -161,7 +161,7 @@ namespace NetCoreBBS
             using (var serviceScope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
                 var db = serviceScope.ServiceProvider.GetService<DataContext>();
-                db.Database.Migrate();
+                db!.Database.Migrate();
                 if (db.TopicNodes?.Count() == 0)
                 {
                     db.TopicNodes.AddRange(TopicNodes);

@@ -21,12 +21,12 @@ namespace NetCoreBBS.Middleware
 
         public async Task Invoke(HttpContext httpContext)
         {
-            var url = httpContext.Request.Path.ToString();
-            if (!(url.Contains("/css") || url.Contains("/js") || url.Contains("/images") || url.Contains("/lib")))
+            var url = httpContext?.Request.Path.ToString();
+            if (!(url!.Contains("/css") || url.Contains("/js") || url.Contains("/images") || url.Contains("/lib")))
             {
-                _logger.Info($"Url:{url} IP:{httpContext.Connection.RemoteIpAddress.ToString()} 时间：{DateTime.Now}");
+                _logger.Info($"Url:{url} IP:{httpContext?.Connection.RemoteIpAddress!.ToString()} 时间：{DateTime.Now}");
             }
-            await _next(httpContext);
+            await _next(httpContext!).ConfigureAwait(true);
         }
     }
 
