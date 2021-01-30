@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace NETCoreBBS.EventBus
 {
-    public class InMemoryEventBusSubscriptionsManager
+    public class InMemoryEventBusSubscriptionsManager : IEventBusSubscriptionsManager
     {
         private readonly Dictionary<string, List<SubscriptionInfo>> _handlers;
 
