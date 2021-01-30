@@ -5,4 +5,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\NETCoreBBS.EventBus\NETCoreBBS.EventBus.csproj" />
+  </ItemGroup>
+
 </Project>
